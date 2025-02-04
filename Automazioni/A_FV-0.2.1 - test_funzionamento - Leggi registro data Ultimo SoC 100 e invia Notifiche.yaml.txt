@@ -1,0 +1,19 @@
+alias: >-
+  A_FV-0.2.1 - test_funzionamento - Leggi registro data Ultimo SoC 100 e invia
+  Notifiche
+description: >-
+  leggi il valore del registro [inverter_last_battery_full] ed invia notifiche
+  permanenti, temporanee e istantanee sul cell con l'ultimo 100% registrato.
+triggers: []
+conditions: []
+actions:
+  - data:
+      title: 📊 Notifica Temporanea - Ultimo SoC 100%
+      message: |-
+        Ultimo SoC 100% registrato: {{
+          states('input_datetime.inverter_last_battery_full')
+          if states('input_datetime.inverter_last_battery_full') not in ['unknown', 'unavailable']
+          else 'Non disponibile'
+        }}.
+    action: persistent_notification.create
+mode: single

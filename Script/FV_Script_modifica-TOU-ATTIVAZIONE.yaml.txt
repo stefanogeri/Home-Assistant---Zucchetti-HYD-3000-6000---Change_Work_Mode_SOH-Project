@@ -1,0 +1,17 @@
+sequence:
+  - data:
+      register: 4608
+      values:
+        - 1
+    action: solarman.write_multiple_holding_registers
+  - data:
+      title: Cambio modalità TOU
+      message: >
+        "L'inverter è stato impostato in modalità TOU il {{
+        now().strftime('%d/%m/%Y alle %H:%M:%S') }}."
+      notification_id: inverter_cambio_TOU
+    action: persistent_notification.create
+alias: FV_Script - Attiva Mod. TOU
+description: >-
+  Cambia la modalità dell'inverter in modalità TOU (attiva e crea una notifica
+  permanente)

@@ -1,0 +1,35 @@
+alias: >-
+  FV-Script_modifica_CS - (Configurazione e Verifica Modalità Carica-Scarica) --
+  test1
+sequence:
+  - action: solarman.write_multiple_holding_registers
+    alias: CS - Configura Parametri Carica-Scarica
+    metadata: {}
+    data:
+      register: 4609
+      values:
+        - 0
+        - 291
+        - 3072
+        - 5976
+        - 2500
+        - 2500
+  - delay: "00:00:02"
+  - action: solarman.write_multiple_holding_registers
+    alias: CS - Attiva Modalità Carica-Scarica
+    metadata: {}
+    data:
+      register: 4608
+      values:
+        - 2
+  - delay: "00:00:02"
+  - action: persistent_notification.create
+    data:
+      title: Modalità Carica-Scarica Configurata
+      message: >
+        "La modalità Carica-Scarica è stata configurata e attivata con successo!
+        Parametri: Carica 00:00-11:55, Scarica 12:00-23:56, Potenza 2500W."
+      notification_id: configurazione_carica_scarica
+description: >-
+  Configura e attiva la modalità "Carica-Scarica" come indicato nella guida
+  Modbus.

@@ -1,0 +1,67 @@
+sequence:
+  - alias: TOU regola Numero (Registro 0x1207 [4615]) = 1
+    action: solarman.write_holding_register
+    metadata: {}
+    data:
+      register: 4615
+      value: 0
+  - action: solarman.write_holding_register
+    alias: TOU-carica ora start (Registro 0x1208 [4616]) = 00-00
+    metadata: {}
+    data:
+      register: 4616
+      value: 0
+  - alias: TOU-carica ora STOP (Registro 0x1209 [4617]) = 23-30
+    action: solarman.write_holding_register
+    metadata: {}
+    data:
+      register: 4617
+      value: 5918
+  - action: solarman.write_holding_register
+    alias: TOU-carica SOC stop (Registro 0x120A [4618]) = 100
+    metadata: {}
+    data:
+      register: 4618
+      value: 100
+  - alias: TOU-carica potenza (Registro 0x120B [4619]) = 2500W
+    action: solarman.write_holding_register
+    metadata: {}
+    data:
+      register: 4619
+      value: 2500
+  - action: solarman.write_holding_register
+    alias: TOU-carica date start (Registro 0x120C [4620]) = 01-01
+    metadata: {}
+    data:
+      register: 4620
+      value: 257
+  - action: solarman.write_holding_register
+    alias: TOU-carica date stop (Registro 0x120D [4621]) = 31-12
+    metadata: {}
+    data:
+      register: 4621
+      value: 3103
+  - action: solarman.write_holding_register
+    alias: TOU-giorni regola (Registro 0x120E [4622]) = L-M-M-G-V-S-D
+    metadata: {}
+    data:
+      register: 4622
+      value: 127
+  - action: solarman.write_holding_register
+    alias: TOU-attiva-disattiva regola (Registro 0x120F [4623]) = 1 attiva
+    metadata: {}
+    data:
+      register: 4623
+      value: 1
+  - data:
+      title: mod CS programmata
+      message: >
+        "La mod CARICA-SCARICA è stata configurata. Carica: 00_00-06_00,
+        Scarica: 06_01-00_00. Configurato il {{ now().strftime('%d/%m/%Y alle
+        %H_%M_%S') }}."
+      notification_id: TOU regola 1 ATTIVATA
+    action: persistent_notification.create
+alias: >-
+  FV_Script_modifica-TOU-Regola0 [carica 0000-0600] - [scarica  0601-0000] -
+  [dal 01-01 al 31-12] - ATT
+description: CARICA-SCARICA - carica 00:00-06:00 - scarica 06:01-00:00

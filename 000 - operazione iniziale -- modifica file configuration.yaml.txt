@@ -1,0 +1,8 @@
+nel file configuration.yaml
+inserire il seguente registro che memorizza la data di ultimo soc 100% e riavviare HA:
+
+input_datetime:
+  inverter_last_battery_full:
+    name: Ultima Batteria Piena
+    has_time: true
+    has_date: true 

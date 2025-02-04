@@ -1,0 +1,9 @@
+alias: FV_Set -- for_test -- Imposta manualmente SOC 100% a 5 Giorni Fa
+sequence:
+  - target:
+      entity_id: input_datetime.inverter_last_battery_full
+    data:
+      date: "{{ (now() - timedelta(days=5)).strftime('%Y-%m-%d') }}"
+    action: input_datetime.set_datetime
+mode: single
+description: ""

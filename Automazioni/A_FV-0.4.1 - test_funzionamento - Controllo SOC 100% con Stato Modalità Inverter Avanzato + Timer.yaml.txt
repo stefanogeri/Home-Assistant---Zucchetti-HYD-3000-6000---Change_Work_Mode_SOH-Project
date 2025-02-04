@@ -1,0 +1,93 @@
+alias: >-
+  A_FV-0.4.1 - test_funzionamento - Controllo SOC 100% con Stato Modalità
+  Inverter Avanzato + Timer
+description: >-
+  Verifica l'ultimo SOC 100%, calcola i giorni trascorsi e controlla la modalità
+  di lavoro attuale. Invia notifiche permanenti con istruzioni per mantenere o
+  cambiare modalità operativa e fornisce una notifica dinamica.
+triggers:
+  - minutes: /30
+    trigger: time_pattern
+    enabled: false
+actions:
+  - variables:
+      last_soc_date: "{{ states('input_datetime.inverter_last_battery_full') }}"
+      days_since_last_soc: |-
+        {% if last_soc_date not in ['unknown', 'unavailable'] %}
+          {{ ((now().timestamp() - as_timestamp(last_soc_date)) / 86400) | int }}
+        {% else %}
+          -1
+        {% endif %}
+      current_mode: "{{ states('sensor.zcs_mod_operativa') }}"
+  - data:
+      title: ℹ️ Stato Attuale Modalità Inverter
+      message: "🔄 **Modalità attuale dell'inverter**: **{{ current_mode }}**"
+      notification_id: inverter_mode_status
+    action: persistent_notification.create
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ days_since_last_soc >= 0 and days_since_last_soc < 4 }}"
+        sequence:
+          - data:
+              title: 🔋 SOC 100% Raggiunto di Recente
+              message: Ultimo SOC 100% registrato il **{{ last_soc_date }}**.
+              notification_id: soc_100_recent
+            action: persistent_notification.create
+      - conditions:
+          - condition: template
+            value_template: "{{ days_since_last_soc >= 4 }}"
+        sequence:
+          - data:
+              title: ⚡️ Ultimo SOC 100% Registrato
+              message: Ultimo SOC 100% registrato il **{{ last_soc_date }}**.
+              notification_id: soc_100_tou_change
+            action: persistent_notification.create
+  - delay: "00:00:00.5"
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ days_since_last_soc >= 0 and days_since_last_soc < 4 }}"
+          - condition: template
+            value_template: "{{ current_mode == 'Mod.Automatica' }}"
+        sequence:
+          - data:
+              title: ✅ Nessuna Modifica Necessaria
+              message: |-
+                🔍 Rilevati meno di **4 giorni** dall'ultimo SOC 100%.
+                🔄 **Modalità attuale**: **{{ current_mode }}**
+                ✅ **Nessuna modifica alla modalità di lavoro necessaria.**
+              notification_id: soc_mode_ok
+            action: persistent_notification.create
+      - conditions:
+          - condition: template
+            value_template: "{{ days_since_last_soc >= 0 and days_since_last_soc < 4 }}"
+          - condition: template
+            value_template: "{{ current_mode != 'Mod.Automatica' }}"
+        sequence:
+          - data:
+              title: ⚠️ Cambio Modalità Necessario
+              message: |-
+                🔍 Rilevati meno di **4 giorni** dall'ultimo SOC 100%.
+                🔄 **Modalità attuale**: **{{ current_mode }}**
+                ⚠ **Necessario modificare la modalità di lavoro in AUTOMATICA.**
+              notification_id: soc_mode_change_auto
+            action: persistent_notification.create
+      - conditions:
+          - condition: template
+            value_template: "{{ days_since_last_soc >= 4 }}"
+          - condition: template
+            value_template: "{{ current_mode != 'Mod.TOU' }}"
+        sequence:
+          - data:
+              title: ⚠️ Cambio Modalità Necessario
+              message: >-
+                🔍 Rilevati più di **4 giorni** dall'ultimo SOC 100%.
+
+                🔄 **Modalità attuale**: **{{ current_mode }}**
+
+                ⚠ **Necessario modificare la modalità di lavoro in TOU per
+                forzare la ricarica delle batterie al 100%.**
+              notification_id: soc_mode_change_tou
+            action: persistent_notification.create
+mode: single

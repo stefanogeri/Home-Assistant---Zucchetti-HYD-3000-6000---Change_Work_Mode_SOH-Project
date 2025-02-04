@@ -1,0 +1,17 @@
+alias: FV_Script_modifica-AUTOMATICA - ATTIVAZIONE
+sequence:
+  - data:
+      register: 4608
+      values:
+        - 0
+    action: solarman.write_multiple_holding_registers
+  - data:
+      title: Cambio modalità AUTOMATICA
+      message: >
+        "L'inverter è stato impostato in modalità AUTOMATICA il {{
+        now().strftime('%d/%m/%Y alle %H:%M:%S') }}."
+      notification_id: inverter_cambio_automatica
+    action: persistent_notification.create
+description: >-
+  Cambia la modalità dell'inverter in modalità automatica e crea una notifica
+  permanente

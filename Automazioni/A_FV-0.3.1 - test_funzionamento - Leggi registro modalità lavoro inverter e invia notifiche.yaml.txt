@@ -1,0 +1,19 @@
+alias: >-
+  A_FV-0.3.1 - test_funzionamento - Leggi registro modalità lavoro inverter e
+  invia notifiche
+description: >-
+  Leggi il valore del registro sensor.zcs_mod_operativa e invia notifiche
+  permanenti, temporanee e istantanee con lo stato attuale letto.
+triggers: []
+conditions: []
+actions:
+  - data:
+      title: 📊 Notifica Temporanea - Modalità Lavoro
+      message: |-
+        Modalità di lavoro attuale: {{
+          states('sensor.zcs_mod_operativa') 
+          if states('sensor.zcs_mod_operativa') not in ['unknown', 'unavailable']
+          else 'Non disponibile'
+        }}.
+    action: persistent_notification.create
+mode: single

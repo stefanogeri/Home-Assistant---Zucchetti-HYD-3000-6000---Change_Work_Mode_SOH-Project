@@ -1,0 +1,77 @@
+alias: >-
+  FV-Script_modifica_CS - (Configurazione e Verifica Modalità Carica-Scarica) --
+  test2
+sequence:
+  - action: solarman.write_multiple_holding_registers
+    alias: CS - Configura Parametri Carica-Scarica
+    metadata: {}
+    data:
+      register: 4609
+      values:
+        - 0
+        - 291
+        - 3072
+        - 5976
+        - 2500
+        - 2500
+  - delay: "00:00:02"
+  - action: persistent_notification.create
+    data:
+      title: "[Test 2] Verifica Inizio Carica"
+      message: >
+        "Registro 4609 (Ora inizio carica) impostato a: 00:00 (Decimale: 0).
+        Valore letto dal sensore: {{
+        states('sensor.zcs_mod2_carica_scarica_carica_ora_start') }}."
+  - action: persistent_notification.create
+    data:
+      title: "[Test 2] Verifica Fine Carica"
+      message: >
+        "Registro 4610 (Ora fine carica) impostato a: 11:55 (Decimale: 291).
+        Valore letto dal sensore: {{
+        states('sensor.zcs_mod2_carica_scarica_carica_ora_stop') }}."
+  - action: persistent_notification.create
+    data:
+      title: "[Test 2] Verifica Potenza Carica"
+      message: >
+        "Registro 4613 (Potenza carica) impostato a: 2500W (Decimale: 2500).
+        Valore letto dal sensore: {{
+        states('sensor.zcs_mod2_carica_scarica_carica_w') }} W."
+  - action: persistent_notification.create
+    data:
+      title: "[Test 2] Verifica Inizio Scarica"
+      message: >
+        "Registro 4611 (Ora inizio scarica) impostato a: 12:00 (Decimale: 3072).
+        Valore letto dal sensore: {{
+        states('sensor.zcs_mod2_carica_scarica_scarica_ora_start') }}."
+  - action: persistent_notification.create
+    data:
+      title: "[Test 2] Verifica Fine Scarica"
+      message: >
+        "Registro 4612 (Ora fine scarica) impostato a: 23:56 (Decimale: 5976).
+        Valore letto dal sensore: {{
+        states('sensor.zcs_mod2_carica_scarica_scarica_ora_stop') }}."
+  - action: persistent_notification.create
+    data:
+      title: "[Test 2] Verifica Potenza Scarica"
+      message: >
+        "Registro 4614 (Potenza scarica) impostato a: 2500W (Decimale: 2500).
+        Valore letto dal sensore: {{
+        states('sensor.zcs_mod2_carica_scarica_scarica_w') }} W."
+  - action: solarman.write_holding_register
+    alias: CS - Attiva Modalità Carica-Scarica
+    metadata: {}
+    data:
+      register: 4608
+      value: 2
+  - delay: "00:00:02"
+  - action: persistent_notification.create
+    data:
+      title: "[Test 2] Configurazione Modalità Carica-Scarica Completata"
+      message: >
+        "La configurazione della modalità Carica-Scarica è completata con
+        successo! Controlla le notifiche precedenti per i dettagli sui valori
+        configurati e letti."
+      notification_id: configurazione_carica_scarica
+description: >-
+  Configura e verifica la modalità "Carica-Scarica" con notifiche dettagliate
+  sui valori tentati (decimale) e letti.

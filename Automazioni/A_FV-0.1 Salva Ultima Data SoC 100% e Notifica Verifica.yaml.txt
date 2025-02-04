@@ -1,0 +1,81 @@
+alias: A_FV-0.1 Salva Ultima Data SoC 100% e Notifica Verifica
+description: >-
+  Registra data e ora quando il SoC raggiunge il 100% e invia notifiche
+  permanenti, istantanee, temporanee e non permanenti.
+triggers:
+  - minutes: /30
+    trigger: time_pattern
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ states('sensor.zcs_batt_soc') | int == 100 }}"
+        sequence:
+          - data:
+              entity_id: input_datetime.inverter_last_battery_full
+              timestamp: "{{ now().timestamp() | int }}"
+            action: input_datetime.set_datetime
+          - data:
+              title: ⚡ SoC al 100% Rilevato
+              message: >-
+                SoC al 100% rilevato!   Data e ora registrate: {{
+                now().strftime('%Y-%m-%d %H:%M:%S') }}.   Ultimo 100%
+                registrato: {{
+                  states('input_datetime.inverter_last_battery_full')
+                  if states('input_datetime.inverter_last_battery_full') not in ['unknown', 'unavailable']
+                  else 'Non disponibile'
+                }}.
+            action: persistent_notification.create
+            enabled: false
+          - data:
+              title: ⚡ SoC al 100% Rilevato
+              message: >-
+                SoC al 100% rilevato!   Data e ora registrate: {{
+                now().strftime('%Y-%m-%d %H:%M:%S') }}.   Ultimo 100%
+                registrato: {{
+                  states('input_datetime.inverter_last_battery_full')
+                  if states('input_datetime.inverter_last_battery_full') not in ['unknown', 'unavailable']
+                  else 'Non disponibile'
+                }}.
+            action: notify.mobile_app_realme12
+            enabled: false
+          - data:
+              name: SoC al 100% Rilevato
+              message: >-
+                SoC al 100% rilevato!   Data e ora registrate: {{
+                now().strftime('%Y-%m-%d %H:%M:%S') }}.   Ultimo 100%
+                registrato: {{
+                  states('input_datetime.inverter_last_battery_full')
+                  if states('input_datetime.inverter_last_battery_full') not in ['unknown', 'unavailable']
+                  else 'Non disponibile'
+                }}.
+            action: logbook.log
+  - data:
+      name: Verifica SoC
+      message: |-
+        Verifica SoC effettuata:   SoC rilevato: {{
+          states('sensor.zcs_batt_soc') 
+          if states('sensor.zcs_batt_soc') not in ['unknown', 'unavailable']
+          else 'Valore non disponibile'
+        }}%.   Ultimo 100% registrato: {{
+          states('input_datetime.inverter_last_battery_full')
+          if states('input_datetime.inverter_last_battery_full') not in ['unknown', 'unavailable']
+          else 'Non disponibile'
+        }}.
+    action: logbook.log
+  - data:
+      title: 📊 Verifica SoC Effettuata
+      message: |-
+        Verifica SoC effettuata:   SoC rilevato: {{
+          states('sensor.zcs_batt_soc') 
+          if states('sensor.zcs_batt_soc') not in ['unknown', 'unavailable']
+          else 'Valore non disponibile'
+        }}%.   Ultimo 100% registrato: {{
+          states('input_datetime.inverter_last_battery_full')
+          if states('input_datetime.inverter_last_battery_full') not in ['unknown', 'unavailable']
+          else 'Non disponibile'
+        }}.
+    action: persistent_notification.create
+    enabled: true
+mode: single
